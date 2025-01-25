@@ -42,7 +42,7 @@ public class BubbleWrap : ClickableObject
 
     private void Update()
     {
-        transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.identity, Time.deltaTime * 5f);
+        transform.localRotation = Quaternion.Slerp(transform.localRotation, Quaternion.identity, Time.deltaTime * 5f);
         Vector3 pushedVector = transform.localPosition;
         pushedVector.z = Mathf.Lerp(pushedVector.z, 0, Time.deltaTime * 5f);
         transform.localPosition = pushedVector;
