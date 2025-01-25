@@ -30,7 +30,7 @@ public class InputManager : MonoBehaviour
         Ray ray = cam.ScreenPointToRay(Input.mousePosition);
         if (Physics.Raycast(ray, out hit, 100))
         {
-            Debug.Log("hit " + hit.transform.name);
+            //Debug.Log("hit " + hit.transform.name);
 
             ClickableObject clicked = hit.transform.GetComponent<ClickableObject>();
             if (clicked == null)

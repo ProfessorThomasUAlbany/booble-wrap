@@ -9,11 +9,7 @@ public class BubbleWrap : ClickableObject
     [SerializeField]
     private List<AudioClip> pops;
 
-
-
-    [SerializeField]
-    private 
-
+    private List<GameObject> popSources = new List<GameObject>();
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
@@ -31,22 +27,54 @@ public class BubbleWrap : ClickableObject
     {
         base.OnClick(clickedObject);
 
-        Debug.Log("bubble time for " + clickedObject.tag);
         if (clickedObject != null)
         {
             if (clickedObject.CompareTag("Bubble"))
             {
-                if (pops.Count > 0)
-                {
-                    AudioClip pop = pops[Random.Range(0, pops.Count)];
-                    aud.PlayOneShot(pop, 1);
-                    Debug.Log("POP");
-                }
+                POP(clickedObject);
             }
             else if (clickedObject.CompareTag("Wrap"))
             {
                  
             }
         }
+    }
+
+    private void POP(GameObject bubblePopped)
+    {
+        if (pops.Count > 0)
+        {
+            AudioClip pop = pops[Random.Range(0, pops.Count)];
+            GameObject source = getPopSource();
+            AudioSource popSource = source.GetComponent<AudioSource>();
+            popSource.clip = pop;
+            popSource.pitch = (Random.Range(0.8f, 1.2f));
+            popSource.Play();
+            Debug.Log("POP");
+        }
+        bubblePopped.SetActive(false);
+    }
+
+    private GameObject getPopSource()
+    {
+        GameObject popSource = null;
+        foreach (GameObject popSourceObject in popSources)
+        {
+            AudioSource popAud = popSourceObject.GetComponent<AudioSource>();
+            if (!popAud.isPlaying)
+            {
+                popSource = popSourceObject;
+            }
+        }
+
+        if (popSource == null)
+        {
+            popSource = new GameObject();
+            popSource.name = "popSource";
+            popSource.AddComponent<AudioSource>();
+            popSources.Add(popSource);
+        }
+
+        return popSource;
     }
 }
