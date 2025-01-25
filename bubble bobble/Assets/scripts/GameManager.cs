@@ -1,3 +1,4 @@
+using System.Collections;
 using TMPro;
 using UnityEngine;
 
@@ -7,12 +8,26 @@ public class GameManager : MonoBehaviour
     [SerializeField]
     private TMP_Text scoreCount;
 
+    [SerializeField]
+    private Transform sheetParent;
+
     [Header("Prefabs")]
     [SerializeField]
     private GameObject bubbleWrapSheet = null;
 
+    [Header("Anim stuff")]
+    [SerializeField]
+    float swapTime = 0.7f;
+    [SerializeField]
+    float swapDistance = 20f;
+    [SerializeField]
+    private AnimationCurve sheetEnterCurve;
+    [SerializeField]
+    private AnimationCurve sheetExitCurve;
 
-    private int popCount = 0;
+
+    private int m_popCount = 0;
+    private GameObject m_currentBubbleSheet = null;
 
 
     private static GameManager s_instance;
@@ -50,31 +65,57 @@ public class GameManager : MonoBehaviour
     void Start()
     {
         scoreCount.text = "0";
-        CreateBubbleWrapSheet();
+        m_currentBubbleSheet = CreateBubbleWrapSheet();
     }
 
-    // Update is called once per frame
-    void Update()
+    private GameObject CreateBubbleWrapSheet()
     {
-        
-    }
-
-    private void CreateBubbleWrapSheet()
-    {
-        Instantiate(bubbleWrapSheet);
+        GameObject newSheet = Instantiate(bubbleWrapSheet, sheetParent);
+        newSheet.transform.localPosition = Vector3.zero;
         BubbleWrap bubbleWrapComponent = bubbleWrapSheet.GetComponent<BubbleWrap>();
         bubbleWrapComponent.onBubblePopped.AddListener(OnPop);
         bubbleWrapComponent.onSheetFinished.AddListener(OnFinishSheet);
+
+        return newSheet;
     }
 
     public void OnPop()
     {
-        popCount++;
-        scoreCount.text = popCount.ToString();
+        m_popCount++;
+        scoreCount.text = m_popCount.ToString();
     }
 
     public void OnFinishSheet()
     {
-        //TODO
+        StartCoroutine(SwapSheets());
+    }
+
+    private IEnumerator SwapSheets()
+    {
+        // Little pause before we swap sheets
+        yield return new WaitForSeconds(0.3f);
+
+        GameObject newSheet = CreateBubbleWrapSheet();
+
+        float currentSwapTime = 0f;
+
+        while (currentSwapTime < swapTime)
+        {
+            float progress = Mathf.Clamp01(currentSwapTime / swapTime);
+
+            Vector3 newSheetPos = new Vector3(0, sheetEnterCurve.Evaluate(progress) * swapDistance, 0);
+            newSheet.transform.localPosition = newSheetPos;
+
+            Vector3 oldSheetPos = new Vector3(0, sheetExitCurve.Evaluate(progress) * swapDistance * -1, 0);
+            m_currentBubbleSheet.transform.localPosition = oldSheetPos;
+
+            yield return null;
+            currentSwapTime += Time.deltaTime;
+        }
+
+        newSheet.transform.localPosition = Vector3.zero;
+
+        Destroy(m_currentBubbleSheet);
+        m_currentBubbleSheet = newSheet;
     }
 }

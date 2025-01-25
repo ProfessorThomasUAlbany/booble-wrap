@@ -13,7 +13,7 @@ public class BubbleWrap : ClickableObject
     [SerializeField]
     private List<AudioClip> pops;
 
-    private List<GameObject> popSources = new List<GameObject>();
+    private static List<GameObject> popSources = new List<GameObject>();
 
     [SerializeField]
     private GameObject popParticles = null;
@@ -66,7 +66,7 @@ public class BubbleWrap : ClickableObject
             popSource.Play();
             Debug.Log("POP");
         }
-        Instantiate(popParticles, bubblePopped.transform.position, bubblePopped.transform.rotation);
+        Instantiate(popParticles, bubblePopped.transform.position, bubblePopped.transform.rotation, transform);
 
         onBubblePopped.Invoke();
         GameManager.Instance.OnPop();
@@ -83,7 +83,7 @@ public class BubbleWrap : ClickableObject
         bubblePopped.SetActive(false);
     }
 
-    private GameObject getPopSource()
+    private static GameObject getPopSource()
     {
         GameObject popSource = null;
         foreach (GameObject popSourceObject in popSources)
