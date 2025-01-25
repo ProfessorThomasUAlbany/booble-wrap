@@ -9321,6 +9321,7 @@ MonoBehaviour:
   pops:
   - {fileID: 8300000, guid: e06090f64b23c464b9ff4043473b7473, type: 3}
   - {fileID: 8300000, guid: df97586f14bb9e74496c2498ae496844, type: 3}
+  popParticles: {fileID: 342451499036548818, guid: 379d043204187854e826079b464deaa7, type: 3}
 --- !u!82 &733373171228165341
 AudioSource:
   m_ObjectHideFlags: 0

@@ -11,6 +11,9 @@ public class BubbleWrap : ClickableObject
 
     private List<GameObject> popSources = new List<GameObject>();
 
+    [SerializeField]
+    private GameObject popParticles = null;
+
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
@@ -52,6 +55,7 @@ public class BubbleWrap : ClickableObject
             popSource.Play();
             Debug.Log("POP");
         }
+        Instantiate(popParticles, bubblePopped.transform.position, bubblePopped.transform.rotation);
         bubblePopped.SetActive(false);
     }
 
