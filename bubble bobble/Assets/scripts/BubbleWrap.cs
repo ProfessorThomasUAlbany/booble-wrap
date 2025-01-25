@@ -1,8 +1,12 @@
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Events;
 
 public class BubbleWrap : ClickableObject
 {
+    public UnityEvent onBubblePopped = new UnityEvent();
+    public UnityEvent onSheetFinished = new UnityEvent();
+
     [SerializeField]
     private AudioSource aud;
 
@@ -14,16 +18,23 @@ public class BubbleWrap : ClickableObject
     [SerializeField]
     private GameObject popParticles = null;
 
+
+    private List<GameObject> m_bubbles = new List<GameObject>();
+    private int m_numBubbles = 0;
+
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
-        
-    }
+        Transform[] allChildren = GetComponentsInChildren<Transform>();
+        foreach (Transform child in allChildren)
+        {
+            if (child.CompareTag("Bubble"))
+            {
+                m_bubbles.Add(child.gameObject);
+            }
+        }
 
-    // Update is called once per frame
-    void Update()
-    {
-        
+        m_numBubbles = m_bubbles.Count;
     }
 
     public override void OnClick(GameObject clickedObject)
@@ -56,6 +67,19 @@ public class BubbleWrap : ClickableObject
             Debug.Log("POP");
         }
         Instantiate(popParticles, bubblePopped.transform.position, bubblePopped.transform.rotation);
+
+        onBubblePopped.Invoke();
+        GameManager.Instance.OnPop();
+        if (m_bubbles.Contains(bubblePopped))
+        {
+            m_bubbles.Remove(bubblePopped);
+            if (m_bubbles.Count == 0)
+            {
+                onSheetFinished.Invoke();
+                GameManager.Instance.OnFinishSheet();
+            }
+        }
+
         bubblePopped.SetActive(false);
     }
 
