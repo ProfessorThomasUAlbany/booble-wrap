@@ -758,6 +758,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   cam: {fileID: 0}
+  controlsDropdown: {fileID: 792485674}
+  controls: 1
 --- !u!4 &623935708
 Transform:
   m_ObjectHideFlags: 0

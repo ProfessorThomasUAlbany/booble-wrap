@@ -1,11 +1,27 @@
+using System;
+using TMPro;
 using Unity.Burst.CompilerServices;
 using Unity.VisualScripting;
+using UnityEditor.ShaderGraph;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class InputManager : MonoBehaviour
 {
     [SerializeField]
     private Camera cam;
+
+    [SerializeField]
+    private TMP_Dropdown controlsDropdown;
+
+    public enum PopControls
+    {
+        Click = 0,
+        Drag = 1,
+        Hover = 2
+    }
+
+    public PopControls controls = PopControls.Click;
 
     private void Start()
     {
@@ -13,14 +29,33 @@ public class InputManager : MonoBehaviour
         {
             cam = Camera.main;
         }
+
+        controlsDropdown.onValueChanged.AddListener(SetControls);
+        controlsDropdown.SetValueWithoutNotify((int)controls);
     }
 
     // Update is called once per frame
     void Update()
     {
-        if (Input.GetMouseButtonDown(0))
+        switch(controls)
         {
-            OnClick();
+            case PopControls.Click:
+                if (Input.GetMouseButtonDown(0))
+                {
+                    OnClick();
+                }
+                break;
+
+            case PopControls.Drag:
+                if (Input.GetMouseButton(0))
+                {
+                    OnClick();
+                }
+                break; 
+
+            case PopControls.Hover:
+                OnClick();
+                break;
         }
     }
 
@@ -43,5 +78,10 @@ public class InputManager : MonoBehaviour
                 clicked.OnClick(hit.transform.gameObject);
             }
         }
+    }
+
+    public void SetControls(int whatIsThisIntFor)
+    {
+        controls = (PopControls)controlsDropdown.value;
     }
 }
