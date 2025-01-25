@@ -17,10 +17,13 @@ public class BubbleWrap : ClickableObject
 
     [SerializeField]
     private GameObject popParticles = null;
-
+    [SerializeField]
+    private GameObject poppedReplacement = null;
 
     private List<GameObject> m_bubbles = new List<GameObject>();
     private int m_numBubbles = 0;
+
+
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
@@ -35,6 +38,14 @@ public class BubbleWrap : ClickableObject
         }
 
         m_numBubbles = m_bubbles.Count;
+    }
+
+    private void Update()
+    {
+        transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.identity, Time.deltaTime * 5f);
+        Vector3 pushedVector = transform.localPosition;
+        pushedVector.z = Mathf.Lerp(pushedVector.z, 0, Time.deltaTime * 5f);
+        transform.localPosition = pushedVector;
     }
 
     public override void OnClick(GameObject clickedObject)
@@ -67,6 +78,11 @@ public class BubbleWrap : ClickableObject
             Debug.Log("POP");
         }
         Instantiate(popParticles, bubblePopped.transform.position, bubblePopped.transform.rotation, transform);
+        if (poppedReplacement  != null)
+        {
+            Instantiate(poppedReplacement, bubblePopped.transform.position, bubblePopped.transform.rotation, transform);
+        }
+        SheetShake(bubblePopped.transform.position);
 
         onBubblePopped.Invoke();
         GameManager.Instance.OnPop();
@@ -81,6 +97,18 @@ public class BubbleWrap : ClickableObject
         }
 
         bubblePopped.SetActive(false);
+    }
+
+    private void SheetShake(Vector3 bubblePoppedPosition)
+    {
+        Vector3 lineToBubble = (bubblePoppedPosition - transform.position).normalized;
+        Vector3 perpendicularLine = new Vector3(lineToBubble.y * -1, lineToBubble.x, 0);
+
+        transform.Rotate(perpendicularLine, -1f * lineToBubble.magnitude);
+
+        Vector3 pushedVector = transform.localPosition;
+        pushedVector.z = lineToBubble.magnitude * 0.15f;
+        transform.localPosition = pushedVector;
     }
 
     private static GameObject getPopSource()
