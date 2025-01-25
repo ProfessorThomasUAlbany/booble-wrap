@@ -1,10 +1,5 @@
-using System;
 using TMPro;
-using Unity.Burst.CompilerServices;
-using Unity.VisualScripting;
-using UnityEditor.ShaderGraph;
 using UnityEngine;
-using UnityEngine.UI;
 
 public class InputManager : MonoBehaviour
 {
