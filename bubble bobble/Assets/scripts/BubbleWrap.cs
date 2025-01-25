@@ -19,6 +19,8 @@ public class BubbleWrap : ClickableObject
     private GameObject popParticles = null;
     [SerializeField]
     private GameObject poppedReplacement = null;
+    [SerializeField]
+    private GameObject backing = null;
 
     private List<GameObject> m_bubbles = new List<GameObject>();
     private int m_numBubbles = 0;
@@ -75,7 +77,7 @@ public class BubbleWrap : ClickableObject
             popSource.clip = pop;
             popSource.pitch = (Random.Range(0.8f, 1.2f));
             popSource.Play();
-            Debug.Log("POP");
+            //Debug.Log("POP");
         }
         Instantiate(popParticles, bubblePopped.transform.position, bubblePopped.transform.rotation, transform);
         if (poppedReplacement  != null)
@@ -105,7 +107,7 @@ public class BubbleWrap : ClickableObject
         // There's probably a way to do this with local transform stuff but oh well
         Vector3 lineToBubble = (bubblePoppedPosition - transform.position).normalized;
         Vector3 perpendicularLine = new Vector3(lineToBubble.z, lineToBubble.x, 0);
-        Debug.Log(lineToBubble + ", " + perpendicularLine);
+        //Debug.Log(lineToBubble + ", " + perpendicularLine);
 
         transform.Rotate(perpendicularLine, -1f * lineToBubble.magnitude);
 
@@ -135,5 +137,10 @@ public class BubbleWrap : ClickableObject
         }
 
         return popSource;
+    }
+
+    public GameObject getMaterial() 
+    {
+        return backing;
     }
 }

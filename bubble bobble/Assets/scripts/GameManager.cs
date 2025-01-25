@@ -24,10 +24,18 @@ public class GameManager : MonoBehaviour
     private AnimationCurve sheetEnterCurve;
     [SerializeField]
     private AnimationCurve sheetExitCurve;
+    [SerializeField]
+    private GameObject combo_assets;
 
 
     private int m_popCount = 0;
     private GameObject m_currentBubbleSheet = null;
+    private GameObject m_currentBacking = null;
+    private Renderer matRenderer = null;
+    private bool rainbow = false;
+    private float rainbow_timer = 0f;
+    private int combo_count = 0;
+    private AudioSource rainbow_music;
 
 
     private static GameManager s_instance;
@@ -65,6 +73,15 @@ public class GameManager : MonoBehaviour
     void Start()
     {
         scoreCount.text = "0";
+        rainbow_music = GetComponent<AudioSource>();
+    }
+
+    void Update() 
+    {
+        if (rainbow) 
+        {
+            UpdateRainbow();
+        }
     }
 
     private GameObject CreateBubbleWrapSheet()
@@ -74,6 +91,9 @@ public class GameManager : MonoBehaviour
         BubbleWrap bubbleWrapComponent = bubbleWrapSheet.GetComponent<BubbleWrap>();
         bubbleWrapComponent.onBubblePopped.AddListener(OnPop);
         bubbleWrapComponent.onSheetFinished.AddListener(OnFinishSheet);
+        m_currentBacking = bubbleWrapComponent.getMaterial();
+        matRenderer = m_currentBacking.GetComponent<Renderer>();
+        
 
         return newSheet;
     }
@@ -82,6 +102,12 @@ public class GameManager : MonoBehaviour
     {
         m_popCount++;
         scoreCount.text = m_popCount.ToString();
+        combo_count++;
+        rainbow_timer = 0;
+        if (combo_count > 50 && !rainbow) 
+        {
+            StartRainbow();
+        }
     }
 
     public void OnFinishSheet()
@@ -122,5 +148,50 @@ public class GameManager : MonoBehaviour
             Destroy(m_currentBubbleSheet);
         }
         m_currentBubbleSheet = newSheet;
+    }
+
+    private void StartRainbow () 
+    {
+        //print(m_currentBacking);
+        matRenderer.sharedMaterial.color = Color.red;
+        rainbow = true;
+        rainbow_music.Play();
+        combo_assets.SetActive(true);
+    }
+
+    private void UpdateRainbow() 
+    {
+        float H, S, V;
+
+        Color.RGBToHSV(matRenderer.sharedMaterial.color, out H, out S, out V);
+        if (H < 1) 
+        {
+            H += 0.5f * Time.deltaTime;
+        }
+        else 
+        {
+            H = 0;
+        }
+        matRenderer.sharedMaterial.color = Color.HSVToRGB(H,S,V);
+
+        rainbow_timer += Time.deltaTime;
+        if (rainbow_timer > 3) 
+        {
+            EndRainbow();
+        }
+    }
+
+    private void EndRainbow() 
+    {
+        matRenderer.sharedMaterial.color = Color.white;
+        rainbow = false;
+        combo_count = 0;
+        rainbow_music.Stop();
+        combo_assets.SetActive(false);
+    }
+
+    public void EndGame() 
+    {
+        Application.Quit();
     }
 }
