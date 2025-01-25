@@ -65,7 +65,6 @@ public class GameManager : MonoBehaviour
     void Start()
     {
         scoreCount.text = "0";
-        m_currentBubbleSheet = CreateBubbleWrapSheet();
     }
 
     private GameObject CreateBubbleWrapSheet()
@@ -106,8 +105,11 @@ public class GameManager : MonoBehaviour
             Vector3 newSheetPos = new Vector3(0, sheetEnterCurve.Evaluate(progress) * swapDistance, 0);
             newSheet.transform.localPosition = newSheetPos;
 
-            Vector3 oldSheetPos = new Vector3(0, sheetExitCurve.Evaluate(progress) * swapDistance * -1, 0);
-            m_currentBubbleSheet.transform.localPosition = oldSheetPos;
+            if (m_currentBubbleSheet != null)
+            {
+                Vector3 oldSheetPos = new Vector3(0, sheetExitCurve.Evaluate(progress) * swapDistance * -1, 0);
+                m_currentBubbleSheet.transform.localPosition = oldSheetPos;
+            }
 
             yield return null;
             currentSwapTime += Time.deltaTime;
@@ -115,7 +117,10 @@ public class GameManager : MonoBehaviour
 
         newSheet.transform.localPosition = Vector3.zero;
 
-        Destroy(m_currentBubbleSheet);
+        if (m_currentBubbleSheet != null)
+        {
+            Destroy(m_currentBubbleSheet);
+        }
         m_currentBubbleSheet = newSheet;
     }
 }
