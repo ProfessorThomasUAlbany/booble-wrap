@@ -101,8 +101,11 @@ public class BubbleWrap : ClickableObject
 
     private void SheetShake(Vector3 bubblePoppedPosition)
     {
+        // The math here is bad and doesn't account for how the sheet's parent is rotated.
+        // There's probably a way to do this with local transform stuff but oh well
         Vector3 lineToBubble = (bubblePoppedPosition - transform.position).normalized;
-        Vector3 perpendicularLine = new Vector3(lineToBubble.y * -1, lineToBubble.x, 0);
+        Vector3 perpendicularLine = new Vector3(lineToBubble.z, lineToBubble.x, 0);
+        Debug.Log(lineToBubble + ", " + perpendicularLine);
 
         transform.Rotate(perpendicularLine, -1f * lineToBubble.magnitude);
 
